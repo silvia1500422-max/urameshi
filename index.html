@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>うらめしのおすすめ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14181F;
+    --ink-soft:#1D232D;
+    --accent:#C9A24B;
+    --text-on-ink:#EDE8DB;
+    --text-on-ink-dim:#A8A398;
+    --font-display: 'Shippori Mincho', serif;
+    --font-body: 'Zen Kaku Gothic New', sans-serif;
+    --radius: 2px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--text-on-ink);
+    font-family:var(--font-body);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{max-width:640px;margin:0 auto;padding:0 0 60px;min-height:100vh;}
+  a{color:inherit;text-decoration:none;}
+
+  header.site{padding:56px 28px 32px;text-align:center;border-bottom:1px solid rgba(201,162,75,0.25);}
+  .site-eyebrow{font-size:12px;letter-spacing:0.3em;color:var(--accent);margin-bottom:14px;}
+  h1.site-title{font-family:var(--font-display);font-weight:700;font-size:clamp(28px,7vw,40px);margin:0 0 10px;line-height:1.4;}
+  p.site-subtitle{color:var(--text-on-ink-dim);font-size:14px;line-height:1.9;margin:0;white-space:pre-wrap;}
+
+  nav.shelf{padding:8px 20px 0;}
+  .shelf-item{display:flex;align-items:center;gap:18px;padding:22px 8px;border-bottom:1px solid rgba(237,232,220,0.12);}
+  .shelf-icon{font-size:26px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:1px solid var(--accent);border-radius:50%;flex-shrink:0;}
+  .shelf-info{flex:1;min-width:0;}
+  .shelf-name{font-family:var(--font-display);font-size:19px;font-weight:700;margin-bottom:4px;}
+  .shelf-count{font-size:12px;color:var(--text-on-ink-dim);}
+  .shelf-arrow{color:var(--accent);font-size:18px;flex-shrink:0;}
+
+  .category-header{padding:36px 28px 20px;display:flex;align-items:center;gap:14px;border-bottom:1px solid rgba(201,162,75,0.25);}
+  .back-btn{background:none;border:1px solid rgba(237,232,220,0.3);color:var(--text-on-ink);width:36px;height:36px;border-radius:50%;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;}
+  h2.category-title{font-family:var(--font-display);font-size:26px;margin:0;}
+  .product-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(237,232,220,0.12);margin-top:1px;}
+  .product-card{background:var(--ink);padding:18px 16px 20px;display:flex;flex-direction:column;gap:10px;}
+  .product-photo{width:100%;aspect-ratio:1/1;background:var(--ink-soft);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid rgba(201,162,75,0.2);}
+  .product-photo img{width:100%;height:100%;object-fit:cover;display:block;}
+  .product-name{font-size:14px;font-weight:700;line-height:1.5;}
+  .product-desc{font-size:12px;color:var(--text-on-ink-dim);line-height:1.7;flex:1;}
+  .product-link{margin-top:4px;font-size:12px;letter-spacing:0.05em;color:var(--accent);border-top:1px solid rgba(201,162,75,0.3);padding-top:10px;}
+  .empty-note{padding:60px 28px;text-align:center;color:var(--text-on-ink-dim);font-size:13px;line-height:2;}
+  footer.site-footer{text-align:center;padding:40px 20px 0;font-size:11px;color:var(--text-on-ink-dim);letter-spacing:0.05em;}
+
+  [data-view="category"] .home-only{display:none;}
+  [data-view="home"] .category-only{display:none;}
+</style>
+</head>
+<body>
+<div class="app" id="app" data-view="home"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ここに商品を追加していきます。チャットで新しい商品を伝えると、この部分が更新されたファイルをお渡しします。
+  const DATA = {
+    title: "うらめしのおすすめ",
+    subtitle: "実際に使って良かったものだけ、\nジャンル別に紹介しています。",
+    categories: [
+      { id: "car", name: "車・社外パーツ", icon: "🚗", products: [] },
+      { id: "game", name: "ゲーム", icon: "🎮", products: [] },
+      { id: "cosme", name: "化粧品・美容", icon: "💄", products: [] }
+    ]
+  };
+
+  function esc(s){
+    return (s||"").replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+  }
+
+  function getCatFromHash(){
+    const h = location.hash.replace("#","");
+    return DATA.categories.find(c=>c.id===h) || null;
+  }
+
+  function render(){
+    const app = document.getElementById("app");
+    const cat = getCatFromHash();
+    app.dataset.view = cat ? "category" : "home";
+
+    let html = `<header class="site">
+      <div class="site-eyebrow">RECOMMEND SHOP</div>
+      <h1 class="site-title">${esc(DATA.title)}</h1>
+      <p class="site-subtitle">${esc(DATA.subtitle)}</p>
+    </header>`;
+
+    if(!cat){
+      html += `<nav class="shelf">`;
+      DATA.categories.forEach(c=>{
+        html += `<a class="shelf-item" href="#${c.id}">
+          <div class="shelf-icon">${c.icon||"★"}</div>
+          <div class="shelf-info">
+            <div class="shelf-name">${esc(c.name)}</div>
+            <div class="shelf-count">${c.products.length}件のおすすめ</div>
+          </div>
+          <div class="shelf-arrow">›</div>
+        </a>`;
+      });
+      html += `</nav>`;
+    } else {
+      html += `<div class="category-header">
+        <a class="back-btn" href="#">‹</a>
+        <h2 class="category-title">${cat.icon||""} ${esc(cat.name)}</h2>
+      </div>`;
+      if(cat.products.length === 0){
+        html += `<div class="empty-note">まだ商品が登録されていません。</div>`;
+      } else {
+        html += `<div class="product-grid">`;
+        cat.products.forEach(p=>{
+          html += `<div class="product-card">
+            <div class="product-photo">${p.image ? `<img src="${p.image}" alt="${esc(p.name)}">` : ""}</div>
+            <div class="product-name">${esc(p.name)}</div>
+            <div class="product-desc">${esc(p.desc)}</div>
+            <a class="product-link" href="${esc(p.amazonUrl||'#')}" target="_blank" rel="noopener">Amazonで見る ›</a>
+          </div>`;
+        });
+        html += `</div>`;
+      }
+    }
+    html += `<footer class="site-footer">${esc(DATA.title)}</footer>`;
+    app.innerHTML = html;
+  }
+
+  window.addEventListener("hashchange", render);
+  render();
+})();
+</script>
+</body>
+</html>
