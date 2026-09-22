@@ -61,10 +61,16 @@
   .shelf-count{font-size:12px;color:var(--text-dim);}
   .shelf-arrow{color:var(--red-bright);font-size:18px;flex-shrink:0;}
 
-  .category-header{padding:36px 28px 20px;display:flex;align-items:center;gap:14px;background:rgba(10,9,8,0.35);border-bottom:1px solid rgba(226,75,66,0.4);}
+  .category-header{padding:28px 28px 0;display:flex;align-items:center;gap:14px;background:rgba(10,9,8,0.35);}
   .back-btn{background:none;border:1px solid rgba(245,238,230,0.3);color:var(--text);width:36px;height:36px;border-radius:50%;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;}
-  h2.category-title{font-family:var(--font-display);font-size:24px;margin:0;}
-  p.category-desc{padding:16px 28px 0;margin:0;font-size:13px;color:var(--text-dim);line-height:1.9;background:rgba(10,9,8,0.35);}
+  h2.category-title{font-family:var(--font-display);font-weight:800;font-size:24px;margin:18px 28px 0;}
+  .cat-desc-wrap{margin:16px 24px 4px;background:rgba(10,9,8,0.35);padding-bottom:4px;}
+  .cat-desc-eyebrow{font-size:11px;letter-spacing:0.2em;color:var(--red-bright);margin-bottom:8px;}
+  .cat-desc-lead{font-family:var(--font-display);font-weight:700;font-size:15px;line-height:1.7;margin-bottom:14px;}
+  .cat-desc-points{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-direction:column;gap:8px;}
+  .cat-desc-points li{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:#241814;line-height:1.7;background:#EDE8DB;border:1px solid rgba(226,75,66,0.4);border-radius:2px;padding:9px 12px;}
+  .cat-desc-points li .dot{color:var(--red-bright);flex-shrink:0;}
+  .cat-desc-close{font-size:12.5px;color:var(--text-dim);line-height:1.8;}
 
   .list-item{background:rgba(10,9,8,0.55);padding:20px 24px;border-bottom:1px solid rgba(226,75,66,0.22);}
   .list-item .name{font-family:var(--font-display);font-weight:700;font-size:16px;margin-bottom:6px;}
@@ -159,7 +165,15 @@
       },
       {
         id: "gear", name: "実際に使ってる配信機材", iconImg: ICON_GEAR, layout: "grid", linkLabel: "Amazonで見る",
-        description: "PCを買うほどではないけど、もっと良い声・音で配信を届けたい人へ。端末だけの配信から一歩抜け出して、iPad+ミキサーで周りと差をつける、ワンランク上の配信環境を紹介します。",
+        description: {
+          lead: "PCを買うほどではないけど、もっと良い声・音で配信を届けたい人へ。",
+          points: [
+            "端末だけの配信から一歩抜け出したい",
+            "iPad+ミキサーで、周りと差をつけたい",
+            "ワンランク上の配信環境を目指したい"
+          ],
+          close: "そんな人向けに、実際に使ってる配信機材を紹介します。"
+        },
         products: [
           {
             name: "YAMAHA ウェブキャスティングミキサー AG03",
@@ -207,7 +221,15 @@
       },
       {
         id: "cosme", name: "おすすめ化粧品", iconImg: ICON_COSME, layout: "grid", linkLabel: "Amazonで見る",
-        description: "40を超えてから、肌の衰えをはっきり感じるようになった。スキンケアは思い立ったが吉日で、今から始めれば10年後の肌は絶対に変わる。毎日使うものだからこそ、自分に合った物・なりたい肌にちゃんとこだわりたいし、実際に使ってみると違いは絶対にわかる。化粧水も美容液も乳液・クリームも、1種類だけあればいいわけじゃなくて、数種類持っておいてその日の肌状態に合わせて使い分けると、コンディションをキープしやすい。あと地味に大事なのが「攻めと守りのバランス」。攻めるケアばかりだと、効果が半減するどころか肌荒れの原因にもなる。ここで紹介してるのは、実際に自分で使って良かったものだけ。気になることがあれば気軽に聞いてください。",
+        description: {
+          lead: "40を超えて感じた肌の衰え。今から始めれば、10年後の肌は変わる。",
+          points: [
+            "毎日使うものだから、自分に合った物・なりたい肌にとことんこだわる",
+            "化粧水・美容液・乳液は数種類持って、その日の肌状態で使い分ける",
+            "大事なのは「攻めと守りのバランス」。攻めすぎは肌荒れの原因にも"
+          ],
+          close: "ここで紹介してるのは、実際に自分で使って良かったものだけ。気になることがあれば気軽に聞いてください。"
+        },
         products: [
           {
             name: "Anua ドクダミ ポアディープクレンジングフォーム",
@@ -341,11 +363,18 @@
     } else {
       html += `<div class="category-header">
         <a class="back-btn" href="#">‹</a>
-        <h2 class="category-title">${esc(cat.name)}</h2>
       </div>`;
       if(cat.description){
-        html += `<p class="category-desc">${esc(cat.description)}</p>`;
+        html += `<div class="cat-desc-wrap">
+          <div class="cat-desc-eyebrow">URAMESHI'S POINT</div>
+          <div class="cat-desc-lead">${esc(cat.description.lead)}</div>
+          <ul class="cat-desc-points">
+            ${cat.description.points.map(pt => `<li><span class="dot">●</span>${esc(pt)}</li>`).join("")}
+          </ul>
+          <p class="cat-desc-close">${esc(cat.description.close)}</p>
+        </div>`;
       }
+      html += `<h2 class="category-title">${esc(cat.name)}</h2>`;
       if(cat.products.length === 0){
         html += `<div class="empty-note">まだ登録されていません。近日追加予定です。</div>`;
       } else if(cat.layout === "list"){
